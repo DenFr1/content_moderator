@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Модерация текста</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>Модерация текстового контента</h1>
+      <div class="status" role="status">
+        <span id="status-dot" class="dot"></span>
+        <span id="status-text">Проверяем связь с сервером…</span>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel" aria-labelledby="in-title">
+        <h2 id="in-title">Сообщение</h2>
+        <label class="sr-only" for="text">Текст сообщения</label>
+        <textarea id="text" rows="8" placeholder="Введите или вставьте сообщение для проверки"></textarea>
+        <div class="form-row">
+          <span id="counter" class="muted">0 / 1000</span>
+          <span class="muted">Ctrl + Enter — проверить</span>
+        </div>
+        <div class="actions">
+          <button id="submit" class="btn" type="button" disabled>Проверить</button>
+        </div>
+        <div class="examples">
+          <span class="muted">Примеры:</span>
+          <button class="link-btn" type="button" data-text="Спасибо за подробный ответ, всё получилось.">обычное</button>
+          <button class="link-btn" type="button" data-text="Ты просто идиот, заткнись и не пиши сюда.">токсичное</button>
+          <button class="link-btn" type="button" data-text="Скидка 50% только сегодня! Заказывай по промокоду и подписывайся.">реклама</button>
+          <button class="link-btn" type="button" data-text="Купи это, идиот, вот промокод">неоднозначное</button>
+        </div>
+      </section>
+
+      <section id="result" class="panel result" aria-live="polite"></section>
+    </main>
+
+    <section class="panel history" aria-labelledby="h-title">
+      <div class="history-head">
+        <h2 id="h-title">История проверок</h2>
+        <button id="clear-history" class="link-btn" type="button" hidden>Очистить историю</button>
+      </div>
+      <ul id="history-list"></ul>
+    </section>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
