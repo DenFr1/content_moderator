@@ -2,6 +2,7 @@ import re
 
 
 def preprocess(text: str) -> str | None:
+    """Cleans and normalizes input text."""
     text = text.lower()
     text = re.sub(r"http(s)*://\S+", "", text)
     text = re.sub(r"\s+", " ", text)
