@@ -22,14 +22,6 @@
   }
 
   async function moderate(text) {
-    if (cfg.USE_MOCK) {
-      try {
-        return await window.mockModerate(text);
-      } catch (e) {
-        throw new ApiError(e.message, e.code || "mock_error");
-      }
-    }
-
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), cfg.TIMEOUT_MS);
     let res;
@@ -55,9 +47,11 @@
     if (!res.ok) {
       let payload = null;
       try { payload = await res.json(); } catch (_) { /* тело не JSON */ }
+      
       throw new ApiError(
-        (payload && payload.error) || "Сервер вернул ошибку " + res.status + ".",
-        (payload && payload.code) || "http_" + res.status
+        (payload && typeof payload.detail === "string" && payload.detail) ||
+          (payload && payload.error) || "Сервер вернул ошибку " + res.status + ".",
+        "http_" + res.status
       );
     }
 
@@ -75,7 +69,6 @@
 
   // true — сервер отвечает. В демо-режиме проверка не нужна.
   async function checkHealth() {
-    if (cfg.USE_MOCK) return true;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 3000);
     try {
@@ -88,5 +81,20 @@
     }
   }
 
-  window.Api = { moderate, checkHealth, ApiError };
+// Запрашивает историю проверок у бэкенда.
+// Возвращает массив: [{id, text, category, confidence, created_at}, ...]
+  async function getHistory() {
+    let res;
+    try {
+      res = await fetch(cfg.API_URL + "/history");
+    } catch (_) {
+      // сервер выключен или недоступен
+      throw new ApiError("Не удалось загрузить историю.", "network");
+    }
+    if (!res.ok) throw new ApiError("Не удалось загрузить историю.", "http_" + res.status);
+    return await res.json();
+  }
+
+  window.Api = { moderate, checkHealth, getHistory, ApiError };
+  
 })();
