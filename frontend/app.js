@@ -203,7 +203,15 @@
     }
 
     latestRecordId = records.reduce((maxId, record) => Math.max(maxId, record.id), 0);
-    const hiddenUpToId = readHiddenUpToId();
+
+    let hiddenUpToId = readHiddenUpToId();
+
+    // Если номера записей стали меньше сохранённого (база пересоздана и номера пошли заново),
+    // сохранённое состояние устарело: сбрасываем его.
+    if (latestRecordId < hiddenUpToId) {
+      hiddenUpToId = 0;
+      writeHiddenUpToId(hiddenUpToId);
+    }
 
     visibleHistory = records
       .filter((record) => record.id > hiddenUpToId)
