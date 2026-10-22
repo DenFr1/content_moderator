@@ -1,13 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
+
 from preprocessing import preprocess
 from database import init_db, save_moderation, get_history
+from model import make_prediction
+
 
 app = FastAPI()
 
 init_db()
-
 
 # Подключаем CORS middleware
 app.add_middleware(
@@ -32,10 +35,22 @@ def home():
 def moderate(data: ModerationRequest):
     """Preprocesses text, saves the moderation result, and returns it."""
     preprocessed_text = preprocess(data.text)
-    save_moderation(preprocessed_text, "normal", 0.87)
+
+    if preprocessed_text is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Text cannot be empty"
+        )
+
+    category, prediction, confidence, threshold = make_prediction(preprocessed_text)
+
+    save_moderation(preprocessed_text, category, confidence)
+
     return {
-        "category": "normal",
-        "confidence": 0.87
+        "category": category,
+        "predicted_label": prediction,
+        "confidence": confidence,
+        "threshold": threshold
     }
 
 
