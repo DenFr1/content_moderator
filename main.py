@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from preprocessing import preprocess
@@ -12,7 +15,10 @@ app = FastAPI()
 
 init_db()
 
-# Подключаем CORS middleware
+# Путь к корню проекта
+BASE_DIR = Path(__file__).resolve().parent
+
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,13 +28,16 @@ app.add_middleware(
 )
 
 
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+
 class ModerationRequest(BaseModel):
     text: str
 
 
 @app.get("/")
-def home():
-    return {"message": "Welcome to AI moderation system"}
+def read_root():
+    return FileResponse(BASE_DIR / "frontend" / "index.html")
 
 
 @app.post("/moderate")

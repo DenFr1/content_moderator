@@ -6,7 +6,7 @@ model = joblib.load(BASE_DIR / "models" / "model_char.joblib")
 
 
 def make_prediction(preprocessed_text: str, chosen_model=model) -> tuple[str, str, float, float]:
-    """Model makes predictions and returns result"""
+    """Predicts category and confidence score for preprocessed text."""
     # Pipeline самостоятельно преобразует текст в TF-IDF
     prediction = chosen_model.predict([preprocessed_text])[0]
 
