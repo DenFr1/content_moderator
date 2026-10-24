@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from preprocessing import preprocess
 from database import init_db, save_moderation, get_history
@@ -32,7 +32,7 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 
 class ModerationRequest(BaseModel):
-    text: str
+    text: str = Field(..., max_length=1000)
 
 
 @app.get("/")
