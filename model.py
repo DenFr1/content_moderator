@@ -14,12 +14,6 @@ def make_prediction(preprocessed_text: str, chosen_model=model) -> tuple[str, st
     probabilities = model.predict_proba([preprocessed_text])[0]
     confidence = float(max(probabilities))
 
-    classes = chosen_model.classes_
-
-    print("Вероятности по категориям:")
-    for class_name, probability in zip(classes, probabilities):
-        print(f"{class_name}: {probability:.2%}")
-
     # Применяем порог уверенности
     threshold = 0.70
 
